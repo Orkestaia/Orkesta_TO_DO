@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: 129 97 220;
+    /* #814AC8 in RGB-ish usually but let's use hex or hsl. Tailwind prefers space separated for opacity magic usually, or just hex defined in config. Let's use CSS vars that tailwind consumes. */
+    --accent: 35 71 91;
+    /* #23475B */
+
+    --background: 255 255 255;
+    --foreground: 23 23 23;
+
+    --muted: 245 245 245;
+    --muted-foreground: 115 115 115;
+
+    --border: 229 229 229;
+  }
+
+  .dark {
+    --background: 10 10 10;
+    --foreground: 250 250 250;
+
+    --muted: 23 23 23;
+    --muted-foreground: 163 163 163;
+
+    --border: 38 38 38;
+  }
+}
+
+/* Custom scrollbar for Kanban */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #525252;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #404040;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #737373;
+}

@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Settings {
+  id             Int     @id @default(1)
+  primaryColor   String  @default("#814AC8")
+  accentColor    String  @default("#23475B")
+  darkMode       Boolean @default(true)
+  gamification   Boolean @default(true)
+  soundEnabled   Boolean @default(false)
+  tasksPerDay    Int     @default(3)
+  deepWorkPerDay Int     @default(1)
+  p1PerWeek      Int     @default(5)
+  globalWipLimit Int     @default(5)
+}
+
+model Project {
+  id        String    @id @default(uuid())
+  name      String
+  parentId  String?
+  icon      String?   // Lucide icon name
+  color     String?
+  wipLimit  Int?
+  archived  Boolean   @default(false)
+  
+  parent    Project?  @relation("ProjectHierarchy", fields: [parentId], references: [id])
+  children  Project[] @relation("ProjectHierarchy")
+  tasks     Task[]
+  
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Task {
+  id              String    @id @default(uuid())
+  title           String
+  description     String?
+  status          String    @default("backlog") // backlog, in_progress, waiting, recurring, done
+  priority        String    @default("P4")      // P1, P2, P3, P4
+  
+  projectId       String?
+  project         Project?  @relation(fields: [projectId], references: [id])
+  
+  labels          String?   // JSON string or comma separated for simple array
+  
+  dueDate         DateTime?
+  estimateMinutes Int?
+  
+  audioTranscript String?
+  source          String    @default("manual") // manual, audio
+  
+  energyLabel     String?   // deep, operativo, comunicacion, creativo (from Prompt)
+  contextLabel    String?   // pc, movil, llamada, reunion
+  timezoneLabel   String?   // us, eu
+  
+  completedAt     DateTime?
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
