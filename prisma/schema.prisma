@@ -3,64 +3,58 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
 model Settings {
-  id             Int     @id @default(1)
-  primaryColor   String  @default("#814AC8")
-  accentColor    String  @default("#23475B")
-  darkMode       Boolean @default(true)
-  gamification   Boolean @default(true)
-  soundEnabled   Boolean @default(false)
-  tasksPerDay    Int     @default(3)
-  deepWorkPerDay Int     @default(1)
-  p1PerWeek      Int     @default(5)
-  globalWipLimit Int     @default(5)
+  id              Int     @id @default(1)
+  primaryColor    String  @default("#814AC8")
+  accentColor     String  @default("#23475B")
+  darkMode        Boolean @default(true)
+  gamification    Boolean @default(true)
+  soundEnabled    Boolean @default(false)
+  
+  // Logic
+  tasksPerDay     Int     @default(5)
+  wipLimit        Int     @default(5)
 }
 
 model Project {
-  id        String    @id @default(uuid())
-  name      String
-  parentId  String?
-  icon      String?   // Lucide icon name
-  color     String?
-  wipLimit  Int?
-  archived  Boolean   @default(false)
+  id          String    @id @default(cuid())
+  name        String
+  parentId    String?
+  parent      Project?  @relation("ProjectHierarchy", fields: [parentId], references: [id])
+  children    Project[] @relation("ProjectHierarchy")
   
-  parent    Project?  @relation("ProjectHierarchy", fields: [parentId], references: [id])
-  children  Project[] @relation("ProjectHierarchy")
-  tasks     Task[]
+  color       String?
+  wipLimit    Int       @default(5)
   
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  tasks       Task[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Task {
-  id              String    @id @default(uuid())
-  title           String
-  description     String?
-  status          String    @default("backlog") // backlog, in_progress, waiting, recurring, done
-  priority        String    @default("P4")      // P1, P2, P3, P4
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  priority    String   @default("P4") // P1, P2, P3, P4
   
-  projectId       String?
-  project         Project?  @relation(fields: [projectId], references: [id])
+  status      String   @default("todo") // todo, waiting, done
+  dueDate     DateTime?
   
-  labels          String?   // JSON string or comma separated for simple array
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id])
   
-  dueDate         DateTime?
-  estimateMinutes Int?
+  // Inbox / Processing
+  isInbox     Boolean  @default(false)
+  transcript  String?  // From audio
   
-  audioTranscript String?
-  source          String    @default("manual") // manual, audio
+  labels      String?  // Comma separated
   
-  energyLabel     String?   // deep, operativo, comunicacion, creativo (from Prompt)
-  contextLabel    String?   // pc, movil, llamada, reunion
-  timezoneLabel   String?   // us, eu
-  
-  completedAt     DateTime?
-  
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  completedAt DateTime?
 }
