@@ -4,8 +4,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  url      = "postgresql://neondb_owner:npg_Xy8fYFKptZb9@ep-autumn-bush-ahhhapsd-pooler.c-3.us-east-1.aws.neon.tech/neondb?connect_timeout=15&sslmode=require"
+  directUrl = "postgresql://neondb_owner:npg_Xy8fYFKptZb9@ep-autumn-bush-ahhhapsd.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require"
 }
 
 model Settings {
