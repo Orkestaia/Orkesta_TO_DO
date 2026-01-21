@@ -29,7 +29,6 @@ export async function createInboxTask(title: string) {
             status: 'backlog',
             projectId: targetProjectId,
             priority: 'P4', // Default for inbox
-            source: 'manual'
         }
     })
 
