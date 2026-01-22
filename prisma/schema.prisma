@@ -54,6 +54,8 @@ model Task {
   transcript  String?  // From audio
   
   labels      String?  // Comma separated
+  energyLabel  String?
+  contextLabel String?
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
